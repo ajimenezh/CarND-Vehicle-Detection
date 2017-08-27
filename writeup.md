@@ -1,5 +1,5 @@
-##Writeup Template
-###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+## Writeup Template
+### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
@@ -29,37 +29,36 @@ The goals / steps of this project are the following:
 [video1]: ./output_videos/project_video.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
-###Writeup / README
+### Writeup / README
 
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
+#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
 
 You're reading it!
 
-###Histogram of Oriented Gradients (HOG)
+### Histogram of Oriented Gradients (HOG)
 
-####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
+#### 1. Explain how (and identify where in your code) you extracted HOG features from the training images.
 
-I started by reading in all the `vehicle` and `non-vehicle` images. I did this in the file `data_reader.py` in the function `get_data()`, that recursively gets all the images. Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+I started by reading all the `vehicle` and `non-vehicle` images. I did this in the file `data_reader.py` in the function `get_data()`, that recursively gets all the images. Here is an example of one `vehicle` and `non-vehicle` classes:
 
 ![alt text][image1]
 
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like. Also, I experimented with different color spaces, which I later found that that had more relevance in obtaining a good solution.
+Then, I explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like. Also, I experimented with different color spaces, which I later found that that had more relevance in obtaining a good solution.
 
-Here is an example using the blue color in `RGB` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`, and another using the gray scale to see the differences. Although the difference seems small, later in the classification, we will see that using the correct color space is essential:
+Here, there is an example using the blue color in `RGB` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`, and another using the gray scale, to see the differences. Although the difference seems small, later in the classification, we will see that using the correct color space is essential:
 
 
 ![alt text][image2]
-
 ![alt text][image3]
 
-####2. Explain how you settled on your final choice of HOG parameters.
+#### 2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters and in the end I decided to use as parameters `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`. Also as the color space, at first I used the gray scale, which performed relatively well, but in the end I used all the channels in the `HSV` color space, because it worked the best.
+I tried various combinations of parameters, and in the end, I decided to use as parameters `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`. Also, as the color space, at first I used the gray scale, which performed relatively well, but in the end I used all the channels in the `HSV` color space, because it worked the best.
 
-####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
+#### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
 I trained the classifier in the file `classifier.py`. At first, I used a linear SVC, which later I substituted with a sigmoid kernel. With this classifier I trained various models with different HOG features (color spaces, parameters and color channels), and also I have mixed the HOF features with an histogram of the images to improve the results.
 
@@ -67,20 +66,20 @@ After this, I experimented with other classifiers, and decide to use the `MLPCla
 
 I trained the model with the HOG features, and 20% of tests.
 
-###Sliding Window Search
+### Sliding Window Search
 
-####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
+#### 1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
 The function to find the windows is `slide_window` in `program.py`, but I ended up using an alternative algorithm to only perform the HOG step once per size of the window, this can be found in the function `find_cars`.
 
-First, I noticed that I only needed to use a subset of the image, without the top and bottom which corresponds to the sky and the car respectively. Then, I divided the image in overlapping windows, with an overlapping coefficient of 0.75. This is because, although the algorithm runs slower because there are more windows, I can detect false positives more easily and obtain more accurate solutions.
+First, I noticed that I only needed to use a subset of the image, without the top and bottom, which corresponds to the sky and the car respectively. Then, I divided the image in overlapping windows, with an overlapping coefficient of 0.75. This is because, although the algorithm runs slower because there are more windows, I can detect false positives more easily and obtain more accurate solutions.
 I used windows of three sizes: 64x64, 96x96, 128x128, which captured well the cars in every position, when they are nearer and when they are further away.
 
 Here is a image with every window.
 
 ![alt text][image4]
 
-####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
+#### 2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
 In summary, I've only used HOG features in `HSV` color space, using all the channels, and a Multi-layer Perceptron classifier. I searched in windows of three sizes (64, 96, 128) with an overlapping of 75%. Here there is an example of the pipeline working in an image.
 
@@ -92,10 +91,10 @@ To optimize the algorithm, I crop out parts of the image that are not used, and 
 
 ### Video Implementation
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
+#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
 Here's a [link to my video result](./output_videos/project_video.mp4)
 
-####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
+#### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
 To prevent false positives, I keep a heatmap with the detections of the last 15 frames (if a windows is classified as car, I sum 1 to the window), and I filter from the heatmap all values less than 12 (there is a special case with the first frames, where the limit is lower).
 
@@ -121,9 +120,9 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ---
 
-###Discussion
+### Discussion
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 One of the major issues with this pipeline is the running time, which at the moment is too slow to be real time, this is mainly because it is very slow to calculate the HOG features and there are too many windows to predict. One possible solution that I thought was to predict only windows near recent predictions, however, in order to predict new cars, we still need to cover the entire image every few frames. Another thing, is that, because we are solving some windows, we could paralelize this part, and reduce the running time a lot. And finally, I'm using a neural network, for which there are other more efficient implementations that the one in scikit-learn.
 
