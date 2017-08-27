@@ -95,8 +95,6 @@ To optimize the algorithm, I crop out parts of the image that are not used, and 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
 Here's a [link to my video result](./output_videos/project_video.mp4)
 
-![alt text][video1]
-
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
 To prevent false positives, I keep a heatmap with the detections of the last 15 frames (if a windows is classified as car, I sum 1 to the window), and I filter from the heatmap all values less than 12 (there is a special case with the first frames, where the limit is lower).
@@ -127,5 +125,8 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+One of the major issues with this pipeline is the running time, which at the moment is too slow to be real time, this is mainly because it is very slow to calculate the HOG features and there are too many windows to predict. One possible solution that I thought was to predict only windows near recent predictions, however, in order to predict new cars, we still need to cover the entire image every few frames. Another thing, is that, because we are solving some windows, we could paralelize this part, and reduce the running time a lot. And finally, I'm using a neural network, for which there are other more efficient implementations that the one in scikit-learn.
+
+Another problem with this pipeline is, that although we can detect cars far way, it can still be a problem when we are moving very fast, because it may not be enough. Cars that are very far appear small, and could not be detected, and, if they are traveling fast, it may be a problem.
+
 
