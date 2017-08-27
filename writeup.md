@@ -24,8 +24,8 @@ The goals / steps of this project are the following:
 [image7]: ./output_images/heatmap_2.jpg
 [image8]: ./output_images/labels_1.jpg
 [image9]: ./output_images/labels_2.jpg
-[image10]: ./output_images/example2.jpg
-[image11]: ./output_images/example3.jpg
+[image10]: ./output_images/examples2.jpg
+[image11]: ./output_images/examples3.jpg
 [video1]: ./output_videos/project_video.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
@@ -95,6 +95,7 @@ To optimize the algorithm, I crop out parts of the image that are not used, and 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
 Here's a [link to my video result](./output_videos/project_video.mp4)
 
+![alt text][video1]
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
