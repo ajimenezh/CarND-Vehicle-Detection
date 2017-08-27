@@ -1,4 +1,6 @@
 
+# Algorithm parameters
+
 color_space = 'HSV'
 hist_bins = 64    # Number of histogram bins
 orient = 9  # HOG orientations

@@ -65,7 +65,8 @@ def train():
 		'pixels per cell and', cell_per_block,'cells per block')
 	print('Feature vector length:', len(X_train[0]))
 	# Use a linear SVC 
-	svc = SVC(kernel='sigmoid')
+	#svc = SVC(kernel='sigmoid')
+	# We are using a Multi-layer Perceptron classifier because it worked better than SVM
 	svc = MLPClassifier(solver='lbfgs')
 	# Check the training time for the SVC
 	t=time.time()

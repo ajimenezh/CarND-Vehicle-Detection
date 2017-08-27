@@ -11,6 +11,9 @@ import features
 from moviepy.editor import VideoFileClip
 from scipy.ndimage.measurements import label
 
+## This part of the pipeline stores the detections of the last 15 frames in a heatmap
+## to avoid false positives, and make the algorithm more robust 
+
 heat = np.zeros((1280, 720)).astype(np.int32)
 windows_list = []
 
@@ -28,12 +31,12 @@ def remove_heat(bbox_list):
 def get_hot_windows():
 	global heat
 	heatmap = np.copy(heat)
+
+	# We use 12 as threshold to avoid false positives
 	heatmap[heatmap < min(2*len(windows_list), 12) + 1] = 0
 	labels = label(heatmap)
 
 	hot_boxes = []
-
-	print (labels[1])
 
 	for elem in range(1, labels[1]+1):
 
@@ -46,7 +49,6 @@ def get_hot_windows():
 
 		hot_boxes.append(bbox)
 	
-	print (hot_boxes)
 	return hot_boxes
 
 def draw_boxes(img, bboxes, color=(0, 0, 255), thick=6):
@@ -59,8 +61,9 @@ def draw_boxes(img, bboxes, color=(0, 0, 255), thick=6):
     # Return the image copy with boxes drawn
     return imcopy
 
-# Define a function you will pass an image 
-# and the list of windows to be searched (output of slide_windows())
+# This functions makes the predictions with the features that are set
+# in the file parameters.py
+# This is not used in the final version, see the function find_cars
 def search_windows(img, windows, clf, scaler, color_space='RGB', 
                     spatial_size=(32, 32), hist_bins=32, 
                     hist_range=(0, 256), orient=9, 
@@ -87,6 +90,10 @@ def search_windows(img, windows, clf, scaler, color_space='RGB',
 	#8) Return windows for positive detections
 	return on_windows
 
+# This function creates the windows with the given scale compared to 64x64, and predicts 
+# if it is a car with the hog features
+# The other features are not implemented here, because in the previous function search_windows
+# I found that they did not improve this pipeline
 def find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
 
 	on_windows = []    
@@ -155,6 +162,7 @@ def find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient, pix
 		        
 	return on_windows
 
+# Find the windows given the size and the x/y start /stop
 def slide_window(img, x_start_stop=[None, None], y_start_stop=[None, None], 
                     xy_window=(64, 64), xy_overlap=(0.5, 0.5)):
     # If x and/or y start/stop positions not defined, set to image size
@@ -207,6 +215,8 @@ def solve_video(path):
 	white_clip.write_videofile(white_output, audio=False)
 
 idx = 0
+
+# Solves each frame
 def process_image(img):
 
 	global idx
@@ -276,6 +286,7 @@ def process_image(img):
           
 	return window_img
 
+# We can save the model and not calculate it each time
 init = False
 
 if not init:
